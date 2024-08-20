@@ -16,7 +16,7 @@ SQLALCHEMY_DATABASE_URI = DATABASE_URL if ENVIRONMENT == "PROD" else (
 
 
 def db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+    app.config['SQLALCHEMY_DATABASE_URI'] = str.replace(SQLALCHEMY_DATABASE_URI, "postgres://", "postgresql://")
     return SQLAlchemy(app)
 
 
