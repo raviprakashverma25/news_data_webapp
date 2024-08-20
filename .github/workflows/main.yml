@@ -48,6 +48,7 @@ jobs:
       - name: Push to dokku
         uses: dokku/github-action@v1.4.0
         with:
+          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
           git_remote_url: ssh://dokku@157.245.129.75:22/newsdatawebapp
           branch: main
