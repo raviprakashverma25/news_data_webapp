@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
-SQLALCHEMY_DATABASE_URI = DATABASE_URL if ENVIRONMENT == "PROD" else (
+URI = DATABASE_URL if ENVIRONMENT == "PROD" else (
         "postgresql://"
         + DB_USERNAME + ":"
         + DB_PASSWORD + "@"
@@ -14,9 +14,11 @@ SQLALCHEMY_DATABASE_URI = DATABASE_URL if ENVIRONMENT == "PROD" else (
         + DB_NAME
 )
 
+SQLALCHEMY_DATABASE_URI = str.replace(URI, "postgres://", "postgresql://")
+
 
 def db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = str.replace(SQLALCHEMY_DATABASE_URI, "postgres://", "postgresql://")
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
     return SQLAlchemy(app)
 
 
