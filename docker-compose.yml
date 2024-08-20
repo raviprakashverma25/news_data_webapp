@@ -1,0 +1,43 @@
+services:
+  postgres-db:
+    image: postgres:14.3
+    container_name: news-database
+    ports:
+      - ${DB_PORT:-5432}:5432
+    environment:
+      POSTGRES_DB: ${DB_NAME:-"news_db"}
+      POSTGRES_USER: ${DB_USERNAME:-"newsuser"}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-"newspassword"}
+      ADDITIONAL_POSTGRES_DBS: ""
+    volumes:
+      - ./databases/init-scripts:/docker-entrypoint-initdb.d
+      - ./.docker-data/.pg-data:/var/lib/postgresql/data
+  web-application:
+    depends_on:
+      - postgres-db
+      - data-collector
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: gunicorn applications.web_application.app:app --bind ${HOST}:${WEB_APPLICATION_PORT}
+    ports:
+      - ${WEB_APPLICATION_PORT:-8080}:8080
+    env_file:
+      - .env.dev
+    environment:
+      DB_HOST : "postgres-db"
+      DATA_COLLECTOR_HOST : "data-collector"
+      DATA_ANALYZER_HOST : "data-analyzer"
+  data-collector:
+    depends_on:
+      - postgres-db
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: gunicorn applications.data_collector.app:app --bind ${HOST}:${DATA_COLLECTOR_PORT}
+    ports:
+      - ${DATA_COLLECTOR_PORT:-9081}:9081
+    env_file:
+      - .env.dev
+    environment:
+      DB_HOST: "postgres-db"
