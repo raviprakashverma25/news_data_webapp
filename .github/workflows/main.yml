@@ -1,0 +1,54 @@
+name: CI/CD pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.14'
+          cache: 'pip' 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Create .env file
+        run: |
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+      - name: Run Tests
+        run: pytest
+        env:
+          ENV: local
+          PYTHONPATH: .
+          DB_NAME: defaultdb
+          DB_HOST: db-postgresql-nyc1-46237-do-user-17557516-0.f.db.ondigitalocean.com
+          DB_PORT: 25060
+          DATA_COLLECTOR_PORT: 9081
+          DATA_ANALYZER_PORT: 9091
+
+
+  deploy:
+    runs-on: ubuntu-22.04
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          git_remote_url: ssh://dokku@157.245.129.75:22/newsdatawebapp
+          branch: main
+          git_push_flags: --force
+          command: deploy
