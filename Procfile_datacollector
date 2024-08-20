@@ -1,0 +1,1 @@
+web: gunicorn applications.data_collector.app:app
