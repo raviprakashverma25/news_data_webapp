@@ -27,7 +27,7 @@ jobs:
       - name: Run Tests
         run: pytest
         env:
-          ENV: local
+          ENVIRONMENT: local
           PYTHONPATH: .
           DB_NAME: defaultdb
           DB_HOST: ${{ secrets.DB_HOST }}
@@ -47,6 +47,18 @@ jobs:
           fetch-depth: 0
       - name: Push to dokku
         uses: dokku/github-action@v1.4.0
+        env:
+          ENVIRONMENT: local
+          PYTHONPATH: .
+          DB_NAME: defaultdb
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: 25060
+          DATA_COLLECTOR_PORT: 9081
+          DATA_ANALYZER_PORT: 9091
+          WEB_APPLICATION_PORT: 8082
+          DATA_COLLECTOR_HOST: 0.0.0.0
+          DATA_ANALYZER_HOST: 0.0.0.0
+          WEB_APPLICATION_HOST: 0.0.0.0
         with:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           git_remote_url: ssh://dokku@192.34.60.153:22/newsdatawebapp
