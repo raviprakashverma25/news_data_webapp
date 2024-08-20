@@ -38,7 +38,7 @@ jobs:
 
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.40
     needs: test
     steps:
       - name: Checkout code
@@ -46,7 +46,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Push to dokku
-        uses: dokku/github-action@master
+        uses: dokku/github-action@v1.4.0
         with:
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
           git_remote_url: ssh://dokku@192.34.60.153:22/newsdatawebapp
