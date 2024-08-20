@@ -1,10 +1,11 @@
-from components.environment_support.constants import DB_HOST, DB_PORT
+from components.environment_support.constants import ENVIRONMENT
+from components.environment_support.constants import DATABASE_URL, DB_HOST, DB_PORT
 from components.environment_support.constants import DB_NAME, DB_USERNAME, DB_PASSWORD
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
-SQLALCHEMY_DATABASE_URI = (
+SQLALCHEMY_DATABASE_URI = DATABASE_URL if ENVIRONMENT == "PROD" else (
         "postgresql://"
         + DB_USERNAME + ":"
         + DB_PASSWORD + "@"
